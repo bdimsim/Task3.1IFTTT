@@ -13,6 +13,17 @@ BH1750 lightSensor;
 
 bool sunlightDetected = false;
 
+void connectWifi()
+{
+  Serial.print("Attempting to connect to WPA SSID: ");
+  Serial.println(ssid);
+  while (WiFi.begin(ssid, pass) != WL_CONNECTED)
+  {
+    delay(5000);
+  }
+  Serial.println("Connected to WiFi.\n");
+}
+
 void sendToIFTTT(float lux, const char *event)
 {
   if (client.connect("maker.ifttt.com", 80)) // Connect to IFTTT if not connected
@@ -33,24 +44,12 @@ void sendToIFTTT(float lux, const char *event)
     }
 
     client.stop(); // closes the connection
-    Serial.println("Data sent to IFTTT. The connection is now closed.");
+    Serial.println("\nData sent to IFTTT. The connection is now closed.");
   }
   else
   {
-    Serial.println("connection to IFTTT failed.");
+    Serial.println("connection to IFTTT failed.\n");
   }
-}
-
-void connectWifi()
-{
-  Serial.print("Attempting to connect to WPA SSID: ");
-  Serial.println(ssid);
-  while (WiFi.begin(ssid, pass) != WL_CONNECTED)
-  {
-    Serial.print(".");
-    delay(5000);
-  }
-  Serial.println("Connected to WiFi.\n");
 }
 
 void setup()
