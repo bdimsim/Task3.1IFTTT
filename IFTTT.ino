@@ -10,6 +10,7 @@ WiFiClient client;
 BH1750 lightSensor;
 
 constexpr unsigned long sunlightTimeThreshold = 1000 * 60 * 60 * 2; // 2 hours in milliseconds
+unsigned long sunlightTotalTime = 0;
 unsigned long sunlightStartTime = 0;
 bool sunlightDetected = false;
 
@@ -66,6 +67,7 @@ void loop() {
     Serial.println("Error: Could not read data from sensor.");
   }
   else if (lux < 400 && sunlightDetected) {
+    sunlightTotalTime += millis() - sunlightStartTime;
     sunlightDetected = false;
   }
   else if (lux >= 400 && !sunlightDetected) {
@@ -73,7 +75,7 @@ void loop() {
     sunlightStartTime = millis(); // Timer value when sunlight is detected
   }
 
-  if (sunlightDetected && (millis() - sunlightStartTime >= sunlightTimeThreshold)) {
+  if (sunlightDetected && (sunlightTotalTime >= sunlightTimeThreshold)) {
     sendToIFTTT("2_hours_of_sunlight");
     sunlightDetected = false;
   }
